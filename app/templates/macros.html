@@ -10,14 +10,13 @@
 <svg class="{{ cls }}" viewBox="{{ g.viewbox }}" {% if label %}role="img" aria-label="{{ label }}"{% else %}aria-hidden="true"{% endif %} data-logo>
   {%- if g.guides %}
   <g class="logo-guides">
-    {%- for l in g.letters %}
-    {%- for x1, y1, x2, y2, diag in l.rays %}<line x1="{{ x1 }}" y1="{{ y1 }}" x2="{{ x2 }}" y2="{{ y2 }}"{% if diag %} class="logo-diag"{% endif %}/>{% endfor %}
-    <circle cx="{{ l.cx }}" cy="{{ g.R }}" r="{{ g.R }}"/><circle cx="{{ l.cx }}" cy="{{ g.R }}" r="{{ g.ri }}"/>
+    {%- for l in g.letters %}{% set x, y, s = l.box %}
+    <rect x="{{ x }}" y="{{ y }}" width="{{ s }}" height="{{ s }}"/><line x1="{{ x }}" y1="{{ l.cy }}" x2="{{ x + s }}" y2="{{ l.cy }}"/>
     {%- endfor %}
   </g>
   {%- endif %}
   {%- for l in g.letters %}{% for p in l.parts %}
-  <path d="{{ p.d }}" data-i="{{ l.i }}" data-kind="{{ p.kind }}" data-cx="{{ l.cx }}" data-r0="{{ p.r0 }}" data-r1="{{ p.r1 }}" data-a0="{{ p.a0 }}" data-span="{{ p.span }}"/>
+  <path d="{{ p.d }}" data-i="{{ l.i }}" data-kind="{{ p.kind }}" data-cx="{{ l.cx }}" data-cy="{{ l.cy }}" data-r0="{{ p.r0 }}" data-r1="{{ p.r1 }}" data-a0="{{ p.a0 }}" data-span="{{ p.span }}"/>
   {%- endfor %}{% endfor %}
 </svg>
 {%- endmacro %}

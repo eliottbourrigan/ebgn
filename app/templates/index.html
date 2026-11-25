@@ -2,13 +2,13 @@
 {% from "macros.html" import ring, disc, logo_svg %}
 {% block body %}
 <div id="intro" class="intro fixed inset-0 z-50 grid place-items-center bg-paper cursor-pointer" aria-hidden="true">
-  {{ logo_svg(logo(0.3, 0.3, guides=True), "w-[min(600px,80vw)] overflow-visible fill-carmine") }}
+  {{ logo_svg(logo(guides=True), "w-[min(600px,80vw)] overflow-visible fill-carmine") }}
 </div>
 <main class="min-h-svh grid grid-cols-4 md:grid-cols-12 grid-rows-[auto_1fr_auto] gap-x-5 md:gap-x-8 px-6 pt-7 pb-10 md:px-14 md:pt-12 md:pb-14">
 
   <header class="col-span-4 md:col-span-12 grid grid-cols-subgrid items-baseline">
     <p class="col-span-2 md:col-span-6 self-center">
-      <a href="/" class="inline-block" aria-label="ebgn">{{ logo_svg(logo(0.3, 0.3), "h-[11px] w-auto fill-carmine") }}</a>
+      <a href="/" class="inline-block" aria-label="ebgn">{{ logo_svg(logo(), "h-[17px] w-auto fill-carmine") }}</a>
     </p>
     <p class="col-span-2 md:col-span-6 text-right text-mute animate-rise [animation-delay:150ms]">Portfolio</p>
   </header>

@@ -5,15 +5,14 @@
   const header = document.querySelector("header [data-logo]");
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { intro?.remove(); return; }
 
-  const R = 50;
   const f = n => +n.toFixed(3);
-  const pt = (cx, r, a) => [f(cx + r * Math.cos(a * Math.PI / 180)), f(R - r * Math.sin(a * Math.PI / 180))];
-  function sector(cx, r0, r1, a0, span) {  // même tracé que app/logo.py
+  const pt = (cx, cy, r, a) => [f(cx + r * Math.cos(a * Math.PI / 180)), f(cy - r * Math.sin(a * Math.PI / 180))];
+  function sector(cx, cy, r0, r1, a0, span) {  // même tracé que app/logo.py
     if (span <= 0.05) return "";
     const a1 = a0 + Math.min(span, 359.99), L = span > 180 ? 1 : 0;
-    const [x0, y0] = pt(cx, r1, a0), [x1, y1] = pt(cx, r1, a1);
-    if (!r0) return `M${cx} ${R}L${x0} ${y0}A${r1} ${r1} 0 ${L} 0 ${x1} ${y1}Z`;
-    const [x2, y2] = pt(cx, r0, a1), [x3, y3] = pt(cx, r0, a0);
+    const [x0, y0] = pt(cx, cy, r1, a0), [x1, y1] = pt(cx, cy, r1, a1);
+    if (!r0) return `M${cx} ${cy}L${x0} ${y0}A${r1} ${r1} 0 ${L} 0 ${x1} ${y1}Z`;
+    const [x2, y2] = pt(cx, cy, r0, a1), [x3, y3] = pt(cx, cy, r0, a0);
     return `M${x0} ${y0}A${r1} ${r1} 0 ${L} 0 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 ${L} 1 ${x3} ${y3}Z`;
   }
   const clamp = x => Math.max(0, Math.min(1, x));
@@ -25,14 +24,14 @@
     const parts = [...svg.querySelectorAll("path[data-span]")].map(p => {
       const d = p.dataset, n = Number;
       p.setAttribute("d", "");
-      return { p, cx: n(d.cx), r0: n(d.r0), r1: n(d.r1), a0: n(d.a0), span: n(d.span),
+      return { p, cx: n(d.cx), cy: n(d.cy), r0: n(d.r0), r1: n(d.r1), a0: n(d.a0), span: n(d.span),
                start: n(d.i) * 170 + (d.kind === "pie" ? 650 : 0), dur: d.kind === "pie" ? 650 : 900 };
     });
     let t0 = null;
     const frame = now => {
       t0 ??= now + delay;
       const t = now - t0;
-      for (const s of parts) s.p.setAttribute("d", sector(s.cx, s.r0, s.r1, s.a0, s.span * inOut(clamp((t - s.start) / s.dur))));
+      for (const s of parts) s.p.setAttribute("d", sector(s.cx, s.cy, s.r0, s.r1, s.a0, s.span * inOut(clamp((t - s.start) / s.dur))));
       if (t < DURATION) requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
