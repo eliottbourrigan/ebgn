@@ -7,13 +7,15 @@ router = APIRouter()
 
 GH = "https://github.com/eliottbourrigan/"
 
-# (nom, nature, année, lien) — la liste à éditer
+# (nom, description courte, année, lien) — la liste à éditer
 PROJECTS = [
-    ("iodej", "application web", "2026", GH + "iodej"),
-    ("keypong", "jeu", "2026", GH + "keypong"),
-    ("kanban-md", "outil", "2026", GH + "kanban-md"),
-    ("strava-prog", "sport", "2026", GH + "strava-prog"),
-    ("geotrainer", "jeu", "2025", GH + "geotrainer"),
+    ("player neo", "Agent IA qui prédit les scores du Mondial", "2026", "https://iodagroup.ai/neo/"),
+    ("iodej", "Où déjeuner entre collègues, en swipant", "2026", GH + "iodej"),
+    ("keypong", "Un ping-pong avec des mots", "2026", "https://eliottbourrigan.github.io/keypong/"),
+    ("kanban-md", "Un kanban dans un fichier Markdown", "2026", "https://eliottbourrigan.github.io/kanban-md/"),
+    ("strava-prog", "Ma progression en course à pied", "2026", GH + "strava-prog"),
+    ("geotrainer", "S'entraîner à la géographie", "2025", GH + "geotrainer"),
+    ("an aquatic love story", "EP de musique", "2021", "https://open.spotify.com/album/2WbxmvFJmFFw3YyBwf82em"),
 ]
 
 CV = STATIC / "cv.pdf"

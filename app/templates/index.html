@@ -30,13 +30,13 @@
       <span>Projets</span><span class="tabular-nums">{{ '%02d' % projects|length }}</span>
     </h2>
     <ol>
-      {% for name, kind, year, url in projects %}
+      {% for name, desc, year, url in projects %}
       <li class="animate-rise [animation-delay:calc(500ms_+_var(--i)*90ms)]">
-        <a href="{{ url }}" class="link group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_1fr_auto] items-center gap-x-4 py-[7px]">
+        <a href="{{ url }}" target="_blank" rel="noopener" class="link group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_minmax(0,2fr)_minmax(0,3fr)_auto] items-center gap-x-4 py-[7px]">
           {{ ring(7, "text-ink/35 group-hover:text-carmine group-hover:fill-carmine transition-colors duration-300 [animation-delay:calc(800ms_+_var(--i)*120ms)]") }}
           <span>{{ name }}</span>
-          <span class="hidden md:block text-mute">{{ kind }}</span>
-          <span class="text-mute tabular-nums">{{ year }}</span>
+          <span class="text-mute tabular-nums md:col-start-4">{{ year }}</span>
+          <span class="col-start-2 col-span-2 md:col-start-3 md:col-span-1 md:row-start-1 md:truncate text-mute">{{ desc }}</span>
         </a>
       </li>
       {% endfor %}
