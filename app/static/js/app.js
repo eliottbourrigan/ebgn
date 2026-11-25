@@ -17,20 +17,28 @@
   const clamp = x => Math.max(0, Math.min(1, x));
   const inOut = x => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
-  // « Tracé » : chaque anneau se déroule, puis son secteur ; lettres décalées de 170 ms.
-  const DURATION = 3 * 170 + 650 + 650;
+  // « Tracé » : pour chaque lettre, une seule aiguille fait le tour depuis le début de l'anneau
+  // et découvre en même temps l'anneau et le secteur ; lettres décalées de 170 ms.
+  const STAGGER = 170, TURN = 1300;   // TURN : durée d'un tour de 315°, même vitesse pour toutes les lettres
+  const DURATION = 3 * STAGGER + TURN;
   function trace(svg, delay = 0) {
-    const parts = [...svg.querySelectorAll("path[data-span]")].map(p => {
-      const d = p.dataset, n = Number;
+    const paths = [...svg.querySelectorAll("path[data-span]")];
+    const ringOf = i => paths.find(p => p.dataset.i === i && p.dataset.kind === "ring").dataset;
+    const parts = paths.map(p => {
+      const d = p.dataset, n = Number, ring = ringOf(d.i);
       p.setAttribute("d", "");
       return { p, cx: n(d.cx), cy: n(d.cy), r0: n(d.r0), r1: n(d.r1), a0: n(d.a0), span: n(d.span),
-               start: n(d.i) * 170 + (d.kind === "pie" ? 650 : 0), dur: d.kind === "pie" ? 650 : 900 };
+               rel: (((n(d.a0) - n(ring.a0)) % 360) + 360) % 360,   // retard angulaire par rapport à l'aiguille
+               total: n(ring.span), start: n(d.i) * STAGGER, dur: (TURN * n(ring.span)) / 315 };
     });
     let t0 = null;
     const frame = now => {
       t0 ??= now + delay;
       const t = now - t0;
-      for (const s of parts) s.p.setAttribute("d", sector(s.cx, s.cy, s.r0, s.r1, s.a0, s.span * inOut(clamp((t - s.start) / s.dur))));
+      for (const s of parts) {
+        const hand = s.total * inOut(clamp((t - s.start) / s.dur));
+        s.p.setAttribute("d", sector(s.cx, s.cy, s.r0, s.r1, s.a0, Math.min(s.span, hand - s.rel)));
+      }
       if (t < DURATION) requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
