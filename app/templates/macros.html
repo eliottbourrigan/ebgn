@@ -5,3 +5,19 @@
 {% macro disc(size, cls="") -%}
 <svg class="o-dot {{ cls }}" width="{{ size }}" height="{{ size }}" viewBox="0 0 {{ size }} {{ size }}" aria-hidden="true"><circle cx="{{ size / 2 }}" cy="{{ size / 2 }}" r="{{ size / 4 }}" stroke-width="{{ size / 2 }}" pathLength="1"/></svg>
 {%- endmacro %}
+{# logo ebgn (app/logo.py) : tracé par app.js quand data-trace est présent #}
+{% macro logo_svg(g, cls="", label="") -%}
+<svg class="{{ cls }}" viewBox="{{ g.viewbox }}" {% if label %}role="img" aria-label="{{ label }}"{% else %}aria-hidden="true"{% endif %} data-logo>
+  {%- if g.guides %}
+  <g class="logo-guides">
+    {%- for l in g.letters %}
+    {%- for x1, y1, x2, y2, diag in l.rays %}<line x1="{{ x1 }}" y1="{{ y1 }}" x2="{{ x2 }}" y2="{{ y2 }}"{% if diag %} class="logo-diag"{% endif %}/>{% endfor %}
+    <circle cx="{{ l.cx }}" cy="{{ g.R }}" r="{{ g.R }}"/><circle cx="{{ l.cx }}" cy="{{ g.R }}" r="{{ g.ri }}"/>
+    {%- endfor %}
+  </g>
+  {%- endif %}
+  {%- for l in g.letters %}{% for p in l.parts %}
+  <path d="{{ p.d }}" data-i="{{ l.i }}" data-kind="{{ p.kind }}" data-cx="{{ l.cx }}" data-r0="{{ p.r0 }}" data-r1="{{ p.r1 }}" data-a0="{{ p.a0 }}" data-span="{{ p.span }}"/>
+  {%- endfor %}{% endfor %}
+</svg>
+{%- endmacro %}

@@ -5,6 +5,8 @@ from pathlib import Path
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
+from app.logo import logo
+
 APP = Path(__file__).resolve().parent
 STATIC = APP / "static"
 templates = Jinja2Templates(directory=APP / "templates")
@@ -20,6 +22,7 @@ def static(path: str) -> str:
 
 
 templates.env.globals["static"] = static
+templates.env.globals["logo"] = logo
 
 
 def render(request: Request, name: str, status_code: int = 200, **ctx):
