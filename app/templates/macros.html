@@ -1,0 +1,7 @@
+{# cercle : contour de 1 px ; rond : disque plein tracé en balayage (trait épais = rayon). Taille en px. #}
+{% macro ring(size, cls="") -%}
+<svg class="o-circle {{ cls }}" width="{{ size }}" height="{{ size }}" viewBox="0 0 {{ size }} {{ size }}" aria-hidden="true"><circle cx="{{ size / 2 }}" cy="{{ size / 2 }}" r="{{ size / 2 - 0.5 }}" stroke-width="1" pathLength="1"/></svg>
+{%- endmacro %}
+{% macro disc(size, cls="") -%}
+<svg class="o-dot {{ cls }}" width="{{ size }}" height="{{ size }}" viewBox="0 0 {{ size }} {{ size }}" aria-hidden="true"><circle cx="{{ size / 2 }}" cy="{{ size / 2 }}" r="{{ size / 4 }}" stroke-width="{{ size / 2 }}" pathLength="1"/></svg>
+{%- endmacro %}

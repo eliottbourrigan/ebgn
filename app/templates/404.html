@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "macros.html" import ring %}
+{% block title %}Introuvable — ebgn{% endblock %}
+{% block body %}
+<main class="min-h-svh grid place-content-center justify-items-center gap-5 px-6 text-center">
+  {{ ring(14, "text-carmine") }}
+  <p class="text-mute">Rien ici pour l'instant.</p>
+  <a href="/" class="link underline underline-offset-[3px] decoration-ink/20">ebgn</a>
+</main>
+{% endblock %}

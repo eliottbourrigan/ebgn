@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "macros.html" import ring, disc %}
+{% block body %}
+<main class="min-h-svh grid grid-cols-4 md:grid-cols-12 grid-rows-[auto_1fr_auto] gap-x-5 md:gap-x-8 px-6 pt-7 pb-10 md:px-14 md:pt-12 md:pb-14">
+
+  <header class="col-span-4 md:col-span-12 grid grid-cols-subgrid items-baseline">
+    <p class="col-span-2 md:col-span-6 flex items-center gap-2.5 font-medium animate-rise">
+      <span class="flex items-center gap-1">
+        {{ ring(9, "text-ink") }}
+        {{ disc(9, "text-carmine [animation-delay:350ms]") }}
+      </span>
+      ebgn
+    </p>
+    <p class="col-span-2 md:col-span-6 text-right text-mute animate-rise [animation-delay:150ms]">Portfolio</p>
+  </header>
+
+  <div class="col-span-4 md:col-start-7 md:col-span-6 self-center py-16 md:py-0" aria-hidden="true">
+    {{ ring(14, "text-carmine [animation-delay:700ms] [animation-duration:2.2s]") }}
+  </div>
+
+  <section class="col-span-4 md:col-span-5 self-end mb-14 md:mb-0">
+    <h1 class="font-medium animate-rise [animation-delay:250ms]">Eliott Bourrigan</h1>
+    <a href="/cv" class="link group mt-6 inline-flex items-center gap-2 text-carmine animate-rise [animation-delay:450ms]">
+      {{ disc(6, "[animation-delay:900ms]") }}
+      <span class="underline decoration-carmine/30 underline-offset-[3px] group-hover:decoration-carmine">Curriculum vitæ</span>
+    </a>
+  </section>
+
+  <section class="col-span-4 md:col-start-7 md:col-span-6 self-end" aria-labelledby="projets">
+    <h2 id="projets" class="mb-5 flex justify-between text-mute animate-rise [animation-delay:400ms]">
+      <span>Projets</span><span class="tabular-nums">{{ '%02d' % projects|length }}</span>
+    </h2>
+    <ol>
+      {% for name, kind, year, url in projects %}
+      <li class="animate-rise [animation-delay:calc(500ms_+_var(--i)*90ms)]">
+        <a href="{{ url }}" class="link group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_1fr_auto] items-center gap-x-4 py-[7px]">
+          {{ ring(7, "text-ink/35 group-hover:text-carmine group-hover:fill-carmine transition-colors duration-300 [animation-delay:calc(800ms_+_var(--i)*120ms)]") }}
+          <span>{{ name }}</span>
+          <span class="hidden md:block text-mute">{{ kind }}</span>
+          <span class="text-mute tabular-nums">{{ year }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+</main>
+{% endblock %}

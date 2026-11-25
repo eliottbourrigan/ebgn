@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}Eliott Bourrigan — ebgn{% endblock %}</title>
+  <meta name="description" content="Eliott Bourrigan (ebgn) — projets et CV.">
+  <meta name="theme-color" content="#fbfbf9">
+  <link rel="preload" href="{{ static('fonts/inter.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ static('css/app.css') }}">
+</head>
+<body class="bg-paper text-ink font-sans text-[13px] leading-[1.55] tracking-[-0.005em] antialiased selection:bg-carmine selection:text-paper">
+  {% block body %}{% endblock %}
+</body>
+</html>
