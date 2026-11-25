@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% from "macros.html" import ring, disc %}
 {% block body %}
+<div id="intro" class="intro fixed inset-0 z-50 grid place-items-center bg-paper cursor-pointer" aria-hidden="true">
+  <svg class="w-[min(600px,80vw)] overflow-visible"></svg>
+</div>
 <main class="min-h-svh grid grid-cols-4 md:grid-cols-12 grid-rows-[auto_1fr_auto] gap-x-5 md:gap-x-8 px-6 pt-7 pb-10 md:px-14 md:pt-12 md:pb-14">
 
   <header class="col-span-4 md:col-span-12 grid grid-cols-subgrid items-baseline">

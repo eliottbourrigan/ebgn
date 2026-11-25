@@ -1,5 +1,5 @@
-"""ebgn serve — lance le serveur de production."""
-import sys
+"""ebgn serve [--host H] [--port P] — lance le serveur de production."""
+import argparse
 
 import uvicorn
 
@@ -7,7 +7,10 @@ from app import config
 
 
 def main() -> None:
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "serve"
-    if cmd != "serve":
-        sys.exit("usage : ebgn serve")
-    uvicorn.run("app.main:app", host=config.HOST, port=config.PORT, proxy_headers=True)
+    parser = argparse.ArgumentParser(prog="ebgn")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+    serve = sub.add_parser("serve")
+    serve.add_argument("--host", default=config.HOST)
+    serve.add_argument("--port", type=int, default=config.PORT)
+    args = parser.parse_args()
+    uvicorn.run("app.main:app", host=args.host, port=args.port, proxy_headers=True)

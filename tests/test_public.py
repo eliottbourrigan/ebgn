@@ -9,6 +9,7 @@ def test_home(client):
     for name, *_ in public.PROJECTS:
         assert name in r.text
     assert "default-src 'self'" in r.headers["content-security-policy"]
+    assert 'id="intro"' in r.text and "/static/js/app.js?v=" in r.text
 
 
 def test_static_versioned_and_immutable(client):
