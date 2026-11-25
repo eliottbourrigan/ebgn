@@ -1,8 +1,7 @@
 // Logo ebgn tracé (géométrie rendue par le serveur, app/logo.py) :
-// écran de chargement à chaque visite, puis balayé par un dégradé ; le logo du header se trace ensuite.
+// écran de chargement à chaque visite, puis balayé par un dégradé.
 (() => {
   const intro = document.getElementById("intro");
-  const header = document.querySelector("header [data-logo]");
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { intro?.remove(); return; }
 
   const f = n => +n.toFixed(3);
@@ -37,10 +36,9 @@
     requestAnimationFrame(frame);
   }
 
-  if (!intro) { if (header) trace(header); return; }
+  if (!intro) return;
 
   intro.classList.add("playing");
-  if (header) header.querySelectorAll("path").forEach(p => p.setAttribute("d", ""));
   trace(intro.querySelector("[data-logo]"), 300);
 
   const LEAVE = 300 + DURATION + 450, WIPE = 1100;
@@ -50,10 +48,24 @@
     leaving = true;
     intro.classList.add("leaving");
     intro.classList.remove("playing");  // la page s'anime sous le balayage
-    if (header) trace(header, 350);
     setTimeout(() => intro.remove(), WIPE);
   }
   setTimeout(leave, LEAVE);
   intro.addEventListener("click", leave);
   addEventListener("keydown", leave, { once: true });
+})();
+
+// Clic n'importe où : une onde carmin s'élargit et s'efface, comme une goutte dans l'eau.
+(() => {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  addEventListener("pointerdown", e => {
+    for (const late of [false, true]) {
+      const ring = document.createElement("span");
+      ring.className = late ? "ripple ripple-late" : "ripple";
+      ring.style.left = `${e.clientX}px`;
+      ring.style.top = `${e.clientY}px`;
+      ring.addEventListener("animationend", () => ring.remove());
+      document.body.appendChild(ring);
+    }
+  }, { passive: true });
 })();

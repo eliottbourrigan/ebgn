@@ -77,6 +77,19 @@ body:has(.intro.playing) main * { animation-play-state: paused; }
 }
 @keyframes intro-fallback { to { visibility: hidden; } }
 
+/* Onde au clic (app.js) */
+.ripple {
+  position: fixed; z-index: 60; width: 200px; height: 200px; margin: -100px 0 0 -100px;
+  border: 1.5px solid var(--color-carmine); border-radius: 50%; pointer-events: none;
+  animation: ripple 1.2s cubic-bezier(0.15, 0.6, 0.3, 1) both;
+}
+.ripple-late { width: 130px; height: 130px; margin: -65px 0 0 -65px; animation-delay: 0.16s; }
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  45% { opacity: 0.85; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
   *, ::before, ::after { animation: none !important; transition: none !important; }
