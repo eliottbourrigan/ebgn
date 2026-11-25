@@ -48,3 +48,12 @@ def test_health(client, tmp_path):
 
 def test_robots(client):
     assert "Allow: /" in client.get("/robots.txt").text
+
+
+def test_favicons(client):
+    r = client.get("/favicon.svg")
+    assert r.status_code == 200 and r.headers["content-type"].startswith("image/svg+xml")
+    assert r.text.startswith("<svg") and "#a3142e" in r.text
+    assert client.get("/favicon.ico").headers["content-type"] == "image/x-icon"
+    home = client.get("/").text
+    assert 'href="/favicon.svg"' in home and "icons/apple-touch-icon.png?v=" in home

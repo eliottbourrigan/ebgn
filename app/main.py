@@ -1,10 +1,11 @@
 from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import FileResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app import config
+from app.logo import glyph_svg
 from app.routes import public
 from app.web import STATIC, render
 
@@ -47,3 +48,16 @@ def healthz_lb():
 @app.get("/robots.txt", response_class=PlainTextResponse)
 def robots():
     return "User-agent: *\nAllow: /\n"
+
+
+ICON_CACHE = {"Cache-Control": "public, max-age=86400"}
+
+
+@app.get("/favicon.svg")
+def favicon_svg():
+    return Response(glyph_svg(0), media_type="image/svg+xml", headers=ICON_CACHE)
+
+
+@app.get("/favicon.ico")
+def favicon_ico():
+    return FileResponse(STATIC / "icons/favicon.ico", media_type="image/x-icon", headers=ICON_CACHE)

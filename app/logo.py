@@ -55,3 +55,11 @@ def logo(t: float = 0.3, sp: float = 0.3, guides: bool = False) -> dict:
         "letters": letters, "R": R, "ri": ri, "guides": guides,
         "viewbox": f"{-pad} {-pad} {_f(3 * step + 2 * R + 2 * pad)} {2 * R + 2 * pad}",
     }
+
+
+def glyph_svg(index: int = 0, t: float = 0.3, color: str = "#a3142e") -> str:
+    """Une lettre seule en SVG autonome (favicon : le « e »)."""
+    ring, pie = LETTERS[index]
+    ri = _f(R * (1 - t))
+    d = sector(R, ri, R, ring[0], ring[1] - ring[0]) + sector(R, 0, _f(ri + OVERLAP), pie[0], pie[1] - pie[0])
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {2 * R} {2 * R}"><path fill="{color}" d="{d}"/></svg>'
