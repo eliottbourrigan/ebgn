@@ -57,3 +57,10 @@ def test_favicons(client):
     assert client.get("/favicon.ico").headers["content-type"] == "image/x-icon"
     home = client.get("/").text
     assert 'href="/favicon.svg"' in home and "icons/apple-touch-icon.png?v=" in home
+
+
+def test_pluie(client):
+    html = client.get("/").text
+    assert 'id="rain"' in html and 'id="rain-settings"' in html and 'id="rain-open"' in html
+    for key, *_, default in public.RAIN:
+        assert f'name="{key}"' in html and f'value="{default}"' in html

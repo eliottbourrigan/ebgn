@@ -77,21 +77,27 @@ body:has(.intro.playing) main * { animation-play-state: paused; }
 }
 @keyframes intro-fallback { to { visibility: hidden; } }
 
-/* Onde au clic (app.js) */
-.ripple {
-  position: fixed; z-index: 60; width: 200px; height: 200px; margin: -100px 0 0 -100px;
-  border: 1.5px solid var(--color-carmine); border-radius: 50%; pointer-events: none;
-  animation: ripple 1.2s cubic-bezier(0.15, 0.6, 0.3, 1) both;
+/* Pluie : fenêtre de réglages (app.js) */
+.rain-dialog {
+  margin: auto; width: min(380px, calc(100vw - 32px)); max-height: calc(100svh - 32px); overflow: auto;
+  padding: 26px 28px 22px; background: var(--color-white); color: var(--color-ink); border: 1px solid var(--color-carmine); border-radius: 0;
+  font-size: 13px; line-height: 1.55;
 }
-.ripple-late { width: 130px; height: 130px; margin: -65px 0 0 -65px; animation-delay: 0.16s; }
-@keyframes ripple {
-  0% { transform: scale(0); opacity: 1; }
-  45% { opacity: 0.85; }
-  100% { transform: scale(1); opacity: 0; }
-}
+.rain-dialog[open] { animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.rain-dialog::backdrop { background: color-mix(in oklab, var(--color-paper) 55%, transparent); backdrop-filter: blur(2px); }
+.rain-range { -webkit-appearance: none; appearance: none; width: 100%; height: 13px; background: transparent; cursor: pointer; }
+.rain-range::-webkit-slider-runnable-track { height: 1px; background: var(--color-ink); }
+.rain-range::-moz-range-track { height: 1px; background: var(--color-ink); }
+.rain-range::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; margin-top: -5px; border-radius: 50%; background: var(--color-white); border: 1px solid var(--color-ink); }
+.rain-range::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--color-white); border: 1px solid var(--color-ink); }
+.rain-range:focus-visible::-webkit-slider-thumb { border-color: var(--color-carmine); background: var(--color-carmine); }
+.rain-check { display: inline-flex; align-items: center; gap: 7px; color: var(--color-mute); cursor: pointer; }
+.rain-check:has(:checked) { color: var(--color-ink); }
+.rain-check input { appearance: none; width: 7px; height: 7px; border-radius: 50%; border: 1px solid currentColor; margin: 0; cursor: pointer; }
+.rain-check input:checked { background: var(--color-carmine); border-color: var(--color-carmine); }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro { display: none; }
+  .intro, #rain, .rain-gear { display: none; }
   *, ::before, ::after { animation: none !important; transition: none !important; }
   .o-circle, .o-dot { stroke-dashoffset: 0; }
 }

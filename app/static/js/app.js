@@ -55,17 +55,136 @@
   addEventListener("keydown", leave, { once: true });
 })();
 
-// Clic n'importe où : une onde carmin s'élargit et s'efface, comme une goutte dans l'eau.
+// Pluie : des gouttes tombent vers un point de fuite (grosses, floues et pâles → petites, nettes et foncées),
+// puis une onde unique s'élargit à l'impact. Un clic fait la même onde. Réglages dans #rain-settings.
 (() => {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  addEventListener("pointerdown", e => {
-    for (const late of [false, true]) {
-      const ring = document.createElement("span");
-      ring.className = late ? "ripple ripple-late" : "ripple";
-      ring.style.left = `${e.clientX}px`;
-      ring.style.top = `${e.clientY}px`;
-      ring.addEventListener("animationend", () => ring.remove());
-      document.body.appendChild(ring);
+  const cv = document.getElementById("rain"), dialog = document.getElementById("rain-settings");
+  if (!cv || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const ctx = cv.getContext("2d"), hasFilter = typeof ctx.filter === "string";
+
+  // ——— réglages : défauts = valeurs des curseurs rendues par le serveur ; préférences en localStorage ———
+  const form = dialog.querySelector("form"), inputs = [...form.querySelectorAll("input[name]")];
+  const read = el => (el.type === "checkbox" ? el.checked : +el.value);
+  const DEFAULTS = Object.fromEntries(inputs.map(el => [el.name, el.type === "checkbox" ? el.defaultChecked : +el.defaultValue]));
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem("ebgn-pluie") || "{}"); } catch {}
+  const P = { ...DEFAULTS, ...saved, pause: false };
+  const decimals = el => (el.step.includes(".") ? el.step.split(".")[1].length : 0);
+  function sync() {
+    for (const el of inputs) {
+      el.type === "checkbox" ? (el.checked = P[el.name]) : (el.value = P[el.name]);
+      const out = form.querySelector(`output[data-for="${el.name}"]`);
+      if (out) out.textContent = (+P[el.name]).toFixed(decimals(el));
     }
+  }
+  form.addEventListener("input", e => {
+    if (!e.target.name) return;
+    P[e.target.name] = read(e.target);
+    sync();
+    const { pause, ...keep } = P;
+    localStorage.setItem("ebgn-pluie", JSON.stringify(keep));
+  });
+  document.getElementById("rain-reset").addEventListener("click", () => {
+    Object.assign(P, DEFAULTS); localStorage.removeItem("ebgn-pluie"); sync();
+  });
+  document.getElementById("rain-open").addEventListener("click", () => dialog.showModal());
+  dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });  // clic hors du cadre
+  sync();
+
+  // ——— couleurs : le carmin du thème, éclairci (début de chute) et assombri (impact) ———
+  const hex = getComputedStyle(document.documentElement).getPropertyValue("--color-carmine").trim() || "#a3142e";
+  const CARMINE = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  const LIGHT = mix(CARMINE, [255, 255, 255], 0.5), DARK = mix(CARMINE, [0, 0, 0], 0.32);
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+  let W = 0, H = 0;
+  function resize() {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  addEventListener("resize", resize); resize();
+
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const clamp = x => Math.max(0, Math.min(1, x));
+  const ease = t => 1 - Math.pow(1 - t, 2.6);
+  let mouse = { x: W / 2, y: H / 2 };
+  addEventListener("pointermove", e => { mouse = { x: e.clientX, y: e.clientY }; }, { passive: true });
+
+  const drops = [], waves = [];
+  let now = performance.now();
+  function drop(x, y) {
+    if (x === undefined) { x = rand(0.04, 0.96) * W; y = rand(0.06, 0.94) * H; }
+    const s = rand(0.7, 1.3);
+    drops.push({ x, y, s, t0: now, dur: P.fall * 1000 * rand(0.85, 1.15), r0: P.size * s, r1: P.end * rand(0.85, 1.15),
+                 ph: rand(0, 7), ph2: rand(0, 7), spin: rand(-1, 1) });
+  }
+  const wave = (x, y, s = 1) => waves.push({ x, y, t0: now, dur: P.plocdur * 1000, R: 90 * P.ploc * s });
+
+  addEventListener("pointerdown", e => {
+    if (e.target.closest("#rain-settings, #rain-open")) return;
+    P.clickdrop ? drop(e.clientX, e.clientY) : wave(e.clientX, e.clientY);
   }, { passive: true });
+
+  function blob(x, y, r, amp, ph, ph2, dir, stretch) {  // disque déformé, étiré vers le point de fuite
+    ctx.save();
+    ctx.translate(x, y); ctx.rotate(dir); ctx.scale(1 + stretch, 1 - stretch * 0.35);
+    ctx.beginPath();
+    for (let i = 0; i <= 36; i++) {
+      const th = (i / 36) * Math.PI * 2, rr = r * (1 + amp * Math.sin(3 * th + ph) + amp * 0.6 * Math.sin(2 * th + ph2));
+      i ? ctx.lineTo(rr * Math.cos(th), rr * Math.sin(th)) : ctx.moveTo(rr * Math.cos(th), rr * Math.sin(th));
+    }
+    ctx.closePath();
+    ctx.restore();
+  }
+
+  let last = performance.now(), acc = 0;
+  function frame(t) {
+    const dt = Math.min(100, t - last); last = t;
+    if (!P.pause) {
+      now += dt;
+      acc += (dt / 1000) * P.rate * clamp((W * H) / (1280 * 800) + 0.2);  // débit proportionnel à la surface
+      while (acc >= 1) { drop(); acc -= 1; }
+    }
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = waves.length - 1; i >= 0; i--) {
+      const g = waves[i], p = (now - g.t0) / g.dur;
+      if (p >= 1) { waves.splice(i, 1); continue; }
+      const late = clamp((p - 0.6) / 0.4), soft = late * late * (3 - 2 * late);   // flou en fin de vie seulement
+      ctx.strokeStyle = rgba(mix(DARK, CARMINE, p), P.alpha * Math.pow(1 - p, 1.2));
+      ctx.lineWidth = 0.7 + 0.3 * p;
+      if (hasFilter && soft > 0) ctx.filter = `blur(${(P.plocblur * soft).toFixed(2)}px)`;
+      ctx.beginPath(); ctx.arc(g.x, g.y, Math.max(0.5, g.R * ease(p)), 0, Math.PI * 2); ctx.stroke();
+      ctx.filter = "none";
+    }
+
+    const v = P.follow ? mouse : { x: W / 2, y: H / 2 }, m = 1 + P.vanish, tw = now / 1000;
+    for (let i = drops.length - 1; i >= 0; i--) {
+      const d = drops[i], p = clamp((now - d.t0) / d.dur);
+      if (p >= 1) { drops.splice(i, 1); wave(d.x, d.y, d.s); continue; }
+      const e = p * p, k = Math.pow(m, 1 - e);
+      const x = v.x + (d.x - v.x) * k, y = v.y + (d.y - v.y) * k;
+      const r = d.r1 * Math.pow(d.r0 / d.r1, 1 - e), blur = r * 0.6 * Math.pow(1 - e, 1.3);
+      const alpha = P.alpha * (0.06 + 0.94 * Math.pow(e, 1.25)), col = mix(LIGHT, DARK, Math.pow(e, 0.8));
+      blob(x, y, r, P.wobble * (1 - e), d.ph + tw * 2.2 * d.spin, d.ph2 - tw * 1.7,
+           Math.atan2(v.y - y, v.x - x), 0.22 * (1 - e) + 0.08 * e);
+      if (hasFilter) {
+        ctx.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "none";
+        ctx.fillStyle = rgba(col, alpha);
+      } else {  // sans filtre de canvas : bord adouci par un dégradé
+        const gr = ctx.createRadialGradient(x, y, 0, x, y, r * 1.3);
+        gr.addColorStop(0, rgba(col, alpha));
+        gr.addColorStop(clamp(1 - blur / r) * 0.75, rgba(col, alpha));
+        gr.addColorStop(1, rgba(col, 0));
+        ctx.fillStyle = gr;
+      }
+      ctx.fill();
+      ctx.filter = "none";
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
