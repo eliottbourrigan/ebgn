@@ -104,7 +104,12 @@ jobs:
           TARGET: ${{ secrets.VPS_USER || 'root' }}@${{ secrets.VPS_HOST }}
         run: |
           # Sonde pendant le déploiement : une requête toutes les 200 ms sur le site public.
-          ( while true; do echo "$(date +%T.%3N) $(curl -s -o /dev/null --connect-timeout 3 -m 5 -w '%{http_code} %{time_total}s' "https://$DOMAIN/healthz" || true)"; sleep 0.2; done ) > probe.log &
+          # Seule la réponse de l'app compte : une page de domaine parqué répond aussi 200.
+          ( while true; do
+              R=$(curl -s --connect-timeout 3 -m 5 "https://$DOMAIN/healthz" || true)
+              if [ "$R" = '{"ok":true}' ]; then echo "$(date +%T.%3N) 200 "; else echo "$(date +%T.%3N) KO ${R:0:40}"; fi
+              sleep 0.2
+            done ) > probe.log &
           PROBE=$!
           $SSH_CMD "$TARGET" \
             "SUDO=; [ \$(id -u) -eq 0 ] || SUDO='sudo -n'; \$SUDO bash $RELEASE/scripts/remote-deploy.sh --domain $DOMAIN --port $APP_PORT"
@@ -119,7 +124,9 @@ jobs:
         timeout-minutes: 4
         run: |
           for i in $(seq 1 12); do
-            if curl -fsS --connect-timeout 5 -m 10 "https://$DOMAIN/healthz"; then echo; echo "✔ https://$DOMAIN est en ligne"; exit 0; fi
+            if [ "$(curl -fsS --connect-timeout 5 -m 10 "https://$DOMAIN/healthz" || true)" = '{"ok":true}' ]; then
+              echo "✔ https://$DOMAIN est en ligne"; exit 0
+            fi
             sleep 5
           done
-          echo "::warning::Le service tourne mais https://$DOMAIN ne répond pas encore (DNS ou certificat en cours ?)"
+          echo "::warning::Le service tourne sur le VPS mais https://$DOMAIN ne le sert pas encore (DNS pas encore pointé sur le VPS, ou certificat en cours)"
