@@ -1,9 +1,0 @@
-{% if q and not hits %}
-<p class="px-4 py-3 text-mute">Aucun résultat pour « {{ q }} ».</p>
-{% endif %}
-{% for h in hits %}
-<button type="button" class="ana-hit link flex w-full items-baseline gap-3 px-4 py-2 text-left" data-key="{{ h.key }}" data-label="{{ h.fr }}{% if h.side %} — {{ h.side }}{% endif %}">
-  <span class="min-w-0 flex-1">{{ h.fr }}{% if h.side %} <span class="text-mute">— {{ h.side }}</span>{% endif %}</span>
-  <span class="text-mute">{{ h.kind }}</span>
-</button>
-{% endfor %}

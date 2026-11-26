@@ -12,8 +12,6 @@ uv run check    # css + tests
 - CV : déposer `app/static/cv.pdf`, servi sur `/cv` (404 tant qu'il est absent).
 - Couleurs et police : `@theme` dans `app/static/css/input.css` (carmin `--color-carmine`).
 - Police : Inter (OFL), `app/static/fonts/`.
-- Anatomie 3D : `/anatomie` — modèle Écorché (CC BY-SA 4.0) dans `app/static/anatomie/`, noms français
-  dans `app/anatomie.py`, rendu WebGL dans `app/static/js/app.js`.
 - Intro (logo tracé puis balayé, une fois par session) : `app/static/js/app.js`.
 
 ## Mise en ligne
