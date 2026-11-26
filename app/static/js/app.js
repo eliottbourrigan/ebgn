@@ -18,8 +18,8 @@
   const inOut = x => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
   // « Tracé » : pour chaque lettre, une seule aiguille fait le tour depuis le début de l'anneau
-  // et découvre en même temps l'anneau et le secteur ; lettres décalées de 170 ms.
-  const STAGGER = 170, TURN = 1300;   // TURN : durée d'un tour de 315°, même vitesse pour toutes les lettres
+  // et découvre en même temps l'anneau et le secteur ; lettres décalées de 110 ms.
+  const STAGGER = 110, TURN = 800;   // TURN : durée d'un tour de 315°, même vitesse pour toutes les lettres
   const DURATION = 3 * STAGGER + TURN;
   function trace(svg, delay = 0) {
     const paths = [...svg.querySelectorAll("path[data-span]")];
@@ -55,11 +55,11 @@
 
   intro.classList.add("playing");
   const logoSvg = intro.querySelector("[data-logo]");
-  trace(logoSvg, 300);
+  trace(logoSvg, 150);
   // clignement des yeux, une fois le logo complet
-  setTimeout(() => logoSvg.querySelectorAll(".logo-eye").forEach(e => e.classList.add("blink")), 300 + DURATION + 80);
+  setTimeout(() => logoSvg.querySelectorAll(".logo-eye").forEach(e => e.classList.add("blink")), 150 + DURATION + 40);
 
-  const LEAVE = 300 + DURATION + 750, WIPE = 1100;   // laisse le temps au clignement
+  const LEAVE = 150 + DURATION + 460, WIPE = 700;   // laisse le temps au clignement
   let leaving = false;
   function leave() {
     if (leaving) return;
