@@ -54,9 +54,12 @@
   if (!intro) return;
 
   intro.classList.add("playing");
-  trace(intro.querySelector("[data-logo]"), 300);
+  const logoSvg = intro.querySelector("[data-logo]");
+  trace(logoSvg, 300);
+  // clignement des yeux, une fois le logo complet
+  setTimeout(() => logoSvg.querySelectorAll(".logo-eye").forEach(e => e.classList.add("blink")), 300 + DURATION + 80);
 
-  const LEAVE = 300 + DURATION + 450, WIPE = 1100;
+  const LEAVE = 300 + DURATION + 750, WIPE = 1100;   // laisse le temps au clignement
   let leaving = false;
   function leave() {
     if (leaving) return;

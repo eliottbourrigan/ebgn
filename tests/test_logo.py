@@ -14,10 +14,10 @@ def test_geometrie():
     assert all(p["d"].startswith("M") for l in g["letters"] for p in l["parts"])
     assert g["viewbox"] == "0 0 430.0 150"           # 4 cases + 3 espaces ; g et n une demi-case plus bas
     assert [l["cy"] for l in g["letters"]] == [50, 50, 100, 100]
-    # yeux du b et du g : sur la bissectrice du secteur (multiple de 22,5°), en ellipse verticale
+    # yeux du b et du g : ronds, sur la bissectrice du secteur (multiple de 22,5°)
     eyes = [l["eye"] for l in g["letters"]]
     assert eyes[0] is None and eyes[3] is None
-    assert [e["a"] % 22.5 for e in eyes[1:3]] == [0, 0] and all(e["ry"] > e["rx"] for e in eyes[1:3])
+    assert [e["a"] % 22.5 for e in eyes[1:3]] == [0, 0] and all(e["r"] == 5 for e in eyes[1:3])
 
 
 def test_secteur_vide():

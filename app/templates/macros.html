@@ -23,7 +23,7 @@
   <path d="{{ p.d }}" data-i="{{ l.i }}" data-kind="{{ p.kind }}" data-cx="{{ l.cx }}" data-cy="{{ l.cy }}" data-r0="{{ p.r0 }}" data-r1="{{ p.r1 }}" data-a0="{{ p.a0 }}" data-span="{{ p.span }}"/>
   {%- endfor %}
   {%- if l.eye %}
-  <ellipse class="logo-eye fill-paper" cx="{{ l.eye.x }}" cy="{{ l.eye.y }}" rx="{{ l.eye.rx }}" ry="{{ l.eye.ry }}" data-i="{{ l.i }}" data-a="{{ l.eye.a }}"/>
+  <circle class="logo-eye fill-paper" cx="{{ l.eye.x }}" cy="{{ l.eye.y }}" r="{{ l.eye.r }}" data-i="{{ l.i }}" data-a="{{ l.eye.a }}"/>
   {%- endif %}{% endfor %}
 </svg>
 {%- endmacro %}
