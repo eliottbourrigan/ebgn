@@ -6,12 +6,13 @@ from fastapi.staticfiles import StaticFiles
 
 from app import config
 from app.logo import glyph_svg
-from app.routes import public
+from app.routes import anatomie, public
 from app.web import STATIC, render
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 app.include_router(public.router)
+app.include_router(anatomie.router)
 
 CSP = "default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
 
