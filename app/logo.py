@@ -15,6 +15,8 @@ LETTERS = (  # (anneau, secteur, décalage vertical en rayons) ; angles (début,
     ((225, 540), (45, 180), 1),   # g
     ((0, 180), (90, 180), 1),     # n
 )
+EYES = (1, 2)            # le b et le g ont un œil : sur la bissectrice du secteur, à mi-rayon
+EYE = (0.48, 0.1, 0.17)  # distance au centre, demi-largeur, demi-hauteur (fractions de R) : ellipse verticale
 OVERLAP = 0.6  # le secteur passe un peu sous l'anneau : pas de liseré d'anticrénelage
 
 
@@ -52,7 +54,12 @@ def logo(t: float = T, sp: float = SP, guides: bool = False) -> dict:
         ]
         for p in parts:
             p["d"] = sector(cx, cy, p["r0"], p["r1"], p["a0"], p["span"])
-        letters.append({"i": i, "cx": cx, "cy": cy, "parts": parts, "box": (_f(cx - R), cy - R, 2 * R)})
+        eye = None
+        if i in EYES:
+            a = (pie[0] + pie[1]) / 2
+            ex, ey = _pt(cx, cy, EYE[0] * R, a)
+            eye = {"x": ex, "y": ey, "rx": _f(EYE[1] * R), "ry": _f(EYE[2] * R), "a": a}
+        letters.append({"i": i, "cx": cx, "cy": cy, "parts": parts, "eye": eye, "x": _f(cx - R)})
     pad = 4 if guides else 0
     return {
         "letters": letters, "R": R, "ri": ri, "guides": guides,

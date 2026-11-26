@@ -31,6 +31,12 @@
                rel: (((n(d.a0) - n(ring.a0)) % 360) + 360) % 360,   // retard angulaire par rapport à l'aiguille
                total: n(ring.span), start: n(d.i) * STAGGER, dur: (TURN * n(ring.span)) / 315 };
     });
+    // yeux : ils s'ouvrent quand l'aiguille de leur lettre passe sur leur angle
+    const eyes = [...svg.querySelectorAll(".logo-eye")].map(el => {
+      const ring = ringOf(el.dataset.i), total = +ring.span;
+      return { el, rel: (((+el.dataset.a - +ring.a0) % 360) + 360) % 360, total, start: +el.dataset.i * STAGGER, dur: (TURN * total) / 315 };
+    });
+    svg.classList.add("tracing");
     let t0 = null;
     const frame = now => {
       t0 ??= now + delay;
@@ -39,6 +45,7 @@
         const hand = s.total * inOut(clamp((t - s.start) / s.dur));
         s.p.setAttribute("d", sector(s.cx, s.cy, s.r0, s.r1, s.a0, Math.min(s.span, hand - s.rel)));
       }
+      for (const e of eyes) e.el.classList.toggle("is-open", e.total * inOut(clamp((t - e.start) / e.dur)) >= e.rel);
       if (t < DURATION) requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
